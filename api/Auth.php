@@ -3,7 +3,7 @@ class Auth {
 
     public function generateJWT($userId, $nama) {
         $issuedAt = time();
-        $expirationTime = $issuedAt + 360; 
+        $expirationTime = $issuedAt + 5; 
         $payload = array(
             "iat" => $issuedAt,
             "exp" => $expirationTime,
@@ -96,5 +96,7 @@ class Auth {
             exit();
         }
     }
+    
+    
 }
 ?>
