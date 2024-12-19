@@ -52,13 +52,16 @@ class Middleware {
         }
     }
 
-    // Middleware untuk limitasi jumlah request dalam periode waktu tertentu
     public function rateLimit() {
-        $ip = $_SERVER['REMOTE_ADDR'];  // Ambil IP pengguna
-        $time = time();  // Waktu sekarang
-        $rateLimitFile = "rate_limit_$ip.txt";  // Nama file berdasarkan IP
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
+        if ($ip === '::1') {
+            $ip = '127.0.0.1';
+        }
+        
+ 
+        $time = time();  
+        $rateLimitFile = "rate_limit_$ip.txt";  
 
-        // Cek apakah file rate limit sudah ada
         if (file_exists($rateLimitFile)) {
             $data = file_get_contents($rateLimitFile);  // Baca data dari file
             $data = explode(",", $data);  // Pisahkan waktu dan jumlah request
