@@ -52,6 +52,8 @@ class Middleware {
         }
     }
 
+    
+
     public function rateLimit() {
         $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
         if ($ip === '::1') {
@@ -63,17 +65,17 @@ class Middleware {
         $rateLimitFile = "rate_limit_$ip.txt";  
 
         if (file_exists($rateLimitFile)) {
-            $data = file_get_contents($rateLimitFile);  // Baca data dari file
-            $data = explode(",", $data);  // Pisahkan waktu dan jumlah request
+            $data = file_get_contents($rateLimitFile); 
+            $data = explode(",", $data);  
 
-            // Validasi data apakah formatnya benar
+  
             if (count($data) == 2) {
-                $lastRequestTime = $data[0];  // Waktu request terakhir
-                $requestCount = (int)$data[1];  // Jumlah request yang telah dilakukan
+                $lastRequestTime = $data[0];  
+                $requestCount = (int)$data[1];  
 
-                // Jika request terakhir dalam 60 detik yang lalu
+         
                 if ($lastRequestTime >= $time - 10) {
-                    // Jika sudah melebihi batas 10 request
+                   
                     if ($requestCount >= 5) {
                         header("HTTP/1.1 429 Too Many Requests");
                         echo json_encode([
@@ -82,20 +84,16 @@ class Middleware {
                         ]);
                         exit();
                     } else {
-                        // Jika belum melebihi batas, tambah jumlah request
                         $data[1]++;
                         file_put_contents($rateLimitFile, implode(",", $data));  // Update file
                     }
                 } else {
-                    // Jika sudah lebih dari 60 detik, reset data
                     file_put_contents($rateLimitFile, "$time,1");
                 }
             } else {
-                // Jika format data tidak sesuai, reset data
                 file_put_contents($rateLimitFile, "$time,1");
             }
         } else {
-            // Jika file rate limit tidak ada, buat baru dengan data pertama
             file_put_contents($rateLimitFile, "$time,1");
         }
     }
