@@ -19,7 +19,6 @@ class Auth {
         $body = base64_encode(json_encode($payload));
         $signature = hash_hmac('sha256', "$header.$body", getenv('JWT_SECRET'), true);
         $signature = base64_encode($signature);
-        
         return "$header.$body.$signature";
     }
 
@@ -37,7 +36,6 @@ class Auth {
         throw new Exception('Token has expired');
     }
 
-        // Validating the signature
         $validSignature = hash_hmac('sha256', "$header.$body", getenv('JWT_SECRET'), true);
         $validSignature = base64_encode($validSignature);
 
